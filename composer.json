@@ -1,0 +1,12 @@
+{
+    "name": "angelaruiu/gourmet-express",
+    "autoload": {
+        "psr-4": { "App\\": "src/" }
+    },
+    "description": "Gourmet Express is a restaurant that offers dine-in experience as well as delivery and takeout services. We are committed to providing delicious meals and exceptional service to our customers.",
+    "require": {
+        "php": ">=8.0",
+        "vlucas/phpdotenv": "^5.5",
+        "dompdf/dompdf": "^2.0"
+    }
+}
