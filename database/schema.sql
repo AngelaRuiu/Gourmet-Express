@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
     `sort_order`  SMALLINT      NOT NULL DEFAULT 0,
     `is_active`   TINYINT(1)    NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uq_categories_slug` (`slug`)
+    UNIQUE KEY `uq_categories_slug` (`slug`),
     INDEX `idx_categories_active` (`is_active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -182,14 +182,11 @@ Customer addresses for delivery orders, linked to an order.
 */
 CREATE TABLE IF NOT EXISTS `addresses` (
     `id`          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
-    `order_id`    INT UNSIGNED          DEFAULT NULL,
     `street`      VARCHAR(200)  NOT NULL,
     `city`        VARCHAR(100)  NOT NULL,
     `postal_code` VARCHAR(20)   NOT NULL,
     `created_at`  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_addresses_order` 
-        FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*
