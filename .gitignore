@@ -3,7 +3,6 @@
 /.idea
 .env
 .DS_Store
-*.log
-*.cache
-*.tmp
+/storage/logs/*.log
+/storage/cache/
 /public/assets/dist

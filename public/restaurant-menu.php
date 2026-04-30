@@ -1,4 +1,6 @@
 <?php
+use App\Core\Config;
+use App\Infrastructure\Logger;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -15,7 +17,7 @@ try {
     $dishes = $menuManager->findAll('category_id ASC');
 
     // The view is rendered only if no exceptions were thrown during data fetch.
-    include \App\Core\Config::get('app.base_path') . '/pages/menu-list.php';
+    include Config::get('paths.views') . '/pages/menu-list.php';
 
 } catch (\Exception $e) {
     // If in development mode, show the full error. Otherwise, show a polite message.
@@ -29,5 +31,10 @@ try {
     }
     
     // Log the error for the admins to review, but don't expose details to the user in production.
-    error_log($e->getMessage());
+   Logger::error("Menu Page Error: " . $e->getMessage(), [
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+        'url'   => $_SERVER['REQUEST_URI'] ?? 'unknown'
+    ]);
 }

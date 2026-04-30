@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\Constants\AppConstants;
+
 /**
  * Class Config
  * Central Registry for application settings. 
@@ -10,13 +12,25 @@ class Config {
     private static array $registry = [];
 
     public static function initialize(): void {
+        $base = dirname(__DIR__, 2); // Base path of the project/ Project root
+
         self::$registry = [
             'app' => [
                 'name'  => $_ENV['APP_NAME'] ?? 'Gourmet Express',
                 'env'   => $_ENV['APP_ENV'] ?? 'production',
                 'url'   => $_ENV['APP_URL'] ?? 'http://localhost',
                 'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                'base_path' => dirname(__DIR__, 2),
+                'timezone' => $_ENV['APP_TIMEZONE'] ?? AppConstants::DEFAULT_TIMEZONE,
+                'currency' => $_ENV['APP_CURRENCY'] ?? AppConstants::DEFAULT_CURRENCY,
+                'base_path' => $base,
+            ],
+            'paths' => [
+                'base_path' => $base,
+                'public'    => $base . '/public',
+                'views'     => $base . '/views',
+                'storage'   => $base . '/storage',
+                'logs'      => $base . '/storage/logs',
+                'cache'     => $base . '/storage/cache',
             ],
             'db' => [
                 'host' => $_ENV['DB_HOST'] ?? 'db',
@@ -39,14 +53,14 @@ class Config {
                 'paypal_id'     => $_ENV['PAYPAL_CLIENT_ID'] ?? '',
                 'paypal_secret' => $_ENV['PAYPAL_CLIENT_SECRET'] ?? '',
                 'paypal_env'    => $_ENV['PAYPAL_ENV'] ?? 'sandbox',
-            ]
+            ],
         ];
     }
 
     /**
      * Get a config value using dot notation (e.g., 'app.name' or 'api.paypal_id')
      */
-    public static function get(string $key, $default = null) {
+    public static function get(string $key, mixed $default = null) {
         $parts = explode('.', $key);
         $value = self::$registry;
 
@@ -66,6 +80,11 @@ class Config {
     public static function isDev(): bool {
         $env = self::get('app.env');
         return $env === 'local' || $env === 'development';
+    }
+
+    public static function isProduction(): bool
+    {
+        return self::get('app.env') === 'production';
     }
 
     /**

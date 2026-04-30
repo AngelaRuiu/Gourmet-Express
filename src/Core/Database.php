@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Constants\AppConstants;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -49,11 +50,12 @@ class Database
         $name = Config::get('db.name');
         $user = Config::get('db.user');
         $pass = Config::get('db.pass');
+        $defaultTimezone = AppConstants::DEFAULT_TIMEZONE;
 
         $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
 
         // Calculate the current offset for Germany dynamically
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
+        $now = new \DateTime('now', new \DateTimeZone($defaultTimezone));
         $offset = $now->format('P'); // Returns "+01:00" or "+02:00" automatically
 
         $options = [

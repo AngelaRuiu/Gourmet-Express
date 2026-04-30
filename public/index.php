@@ -5,6 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use App\Core\Config;
+use App\Constants\AppConstants;
 
 // Initialize Environment Variables
 try {
@@ -23,6 +24,7 @@ try {
 
 // Boot Config Registry
 Config::initialize();
+date_default_timezone_set(AppConstants::DEFAULT_TIMEZONE);
 
 /**
  * Debugging & Error Reporting

@@ -34,16 +34,18 @@ class EmailService {
 
     public function send(string $to, string $subject, string $body): bool {
         try {
+            $this->mailer->clearAddresses(); // prevent bleed between calls
             $this->mailer->addAddress($to);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = $subject;
             $this->mailer->Body    = $body;
+            $this->mailer->AltBody = strip_tags($body); // plain-text fallback
 
             return $this->mailer->send();
         } catch (Exception $e) {
             // Log the error if debug is on
             if (Config::get('app.debug')) {
-                error_log("Mailer Error: {$this->mailer->ErrorInfo}");
+                Logger::error("Mailer failed for {$to}", ['error' => $this->mailer->ErrorInfo]);
             }
             return false;
         }

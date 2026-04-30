@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure;
 
+use App\Core\Config;
+
 /**
  * Class TemplateEngine
  * A lightweight utility to render PHP files as strings with injected data.
@@ -14,7 +16,7 @@ class TemplateEngine {
      * @param array $data Associative array of variables to pass to the template
      */
     public static function render(string $templatePath, array $data = []): string {
-        $fullPath =  \App\Core\Config::get('app.base_path') . '/views/' . $templatePath;
+        $fullPath =  Config::get('paths.views') . '/' . $templatePath;
 
         if (!file_exists($fullPath)) {
             throw new \Exception("Template not found: {$templatePath}");
