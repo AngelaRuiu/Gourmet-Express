@@ -58,15 +58,16 @@ switch ($requestUri) {
         break;
     case '/test-email':
         // For testing email sending (not for production use)
+        if (!\App\Core\Config::isDev()) {
+            http_response_code(403);
+            echo "<h1>403 - Forbidden</h1>";
+            break;
+        }
         $notificationHandler = new \App\Handlers\NotificationHandler();
         $result = $notificationHandler->sendReservationConfirmation(
             'test@example.com',
             'John Doe',
-            [
-                'date' => '2023-10-15',
-                'time' => '19:00',
-                'guests' => 4
-            ]
+            ['date' => '2025-10-15', 'time' => '19:00', 'guests' => 4]
         );
         echo $result ? "Email sent successfully!" : "Failed to send email.";
         break;

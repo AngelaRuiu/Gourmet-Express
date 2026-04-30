@@ -3,6 +3,7 @@
 namespace App\Infrastructure;
 
 use App\Core\Config;
+use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -19,11 +20,15 @@ class EmailService {
         $this->mailer->Username   = Config::get('mail.user');
         $this->mailer->Password   = Config::get('mail.pass');
         $this->mailer->Port       = Config::get('mail.port');
-        
+        $this->mailer->SMTPSecure = Config::get('mail.encryption') == 'ssl' 
+            ? PHPMailer::ENCRYPTION_SMTPS 
+            : PHPMailer::ENCRYPTION_STARTTLS;
+        $this->mailer->CharSet    = 'UTF-8';
+
         // Sender settings
         $this->mailer->setFrom(
-            Config::get('mail.from_address', 'no-reply@gourmet-express.com'), 
-            Config::get('mail.from_name', 'Gourmet Express')
+            Config::get('mail.from_address'), 
+            Config::get('mail.from_name')
         );
     }
 

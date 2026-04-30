@@ -14,7 +14,7 @@ class TemplateEngine {
      * @param array $data Associative array of variables to pass to the template
      */
     public static function render(string $templatePath, array $data = []): string {
-        $fullPath = __DIR__ . '/../../views/' . $templatePath;
+        $fullPath =  \App\Core\Config::get('app.base_path') . '/views/' . $templatePath;
 
         if (!file_exists($fullPath)) {
             throw new \Exception("Template not found: {$templatePath}");

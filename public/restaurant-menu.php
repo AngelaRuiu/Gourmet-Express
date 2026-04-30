@@ -15,7 +15,7 @@ try {
     $dishes = $menuManager->findAll('category_id ASC');
 
     // The view is rendered only if no exceptions were thrown during data fetch.
-    include __DIR__ . '/../templates/views/menu-list.php';
+    include \App\Core\Config::get('app.base_path') . '/pages/menu-list.php';
 
 } catch (\Exception $e) {
     // If in development mode, show the full error. Otherwise, show a polite message.

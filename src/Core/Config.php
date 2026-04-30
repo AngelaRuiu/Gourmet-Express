@@ -16,6 +16,7 @@ class Config {
                 'env'   => $_ENV['APP_ENV'] ?? 'production',
                 'url'   => $_ENV['APP_URL'] ?? 'http://localhost',
                 'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'base_path' => dirname(__DIR__, 2),
             ],
             'db' => [
                 'host' => $_ENV['DB_HOST'] ?? 'db',
@@ -29,6 +30,9 @@ class Config {
                 'port' => $_ENV['MAIL_PORT'] ?? 2525,
                 'user' => $_ENV['MAIL_USER'] ?? '',
                 'pass' => $_ENV['MAIL_PASS'] ?? '',
+                'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'no-reply@gourmet-express.com',
+                'from_name'    => $_ENV['MAIL_FROM_NAME']    ?? 'Gourmet Express',
+                'encryption'   => $_ENV['MAIL_ENCRYPTION']   ?? 'tls',
             ],
             'api' => [
                 'google_key'    => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
