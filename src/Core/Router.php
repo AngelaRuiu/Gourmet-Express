@@ -160,4 +160,25 @@ class Router
 
         $controller->{$method}($request, $response);
     }
+
+/**
+ * Load routes from an external file.
+ *
+ * The file receives $router as a local variable so it can
+ * call $router->get(...) / $router->group(...) directly.
+ *
+ * Usage in index.php:
+ *   $router->loadRoutesFrom(BASE_PATH . '/routes/web.php');
+ *   $router->loadRoutesFrom(BASE_PATH . '/routes/api.php');
+ */
+public function loadRoutesFrom(string $filePath): void
+{
+    if (!file_exists($filePath)) {
+        throw new \RuntimeException("Routes file not found: {$filePath}");
+    }
+
+    // $router is available inside the routes file as a local variable
+    $router = $this;
+    require $filePath;
+}
 }

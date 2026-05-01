@@ -46,48 +46,11 @@ $request  = new Request();
 $response = new Response();
 $router   = new Router();
 
-//Web Routes (For demonstration, these are hardcoded here, will load these from a separate routes file or i'll annotations.)
-//$router->get('/', [\App\Controllers\HomeController::class, 'index']);
-$router->get('/menu', [\App\Controllers\MenuController::class, 'index']);
-//$router->get('/reservations', [\App\Controllers\ReservationController::class, 'index']);
-//$router->post('/reservations', [\App\Controllers\ReservationController::class, 'store']);
-//$router->get('/contact', [\App\Controllers\ContactController::class, 'index']);
-//$router->post('/contact', [\App\Controllers\ContactController::class, 'submit']]);
-
-//API Routes (all prefixed with /api/v1)
-$router->group('/api/v1', function (Router $router) {
-
-    // Status / health-check (no auth required)
-    $router->get('/status', function (Request $req, Response $res) {
-        $res->success([
-            'app'          => Config::get('app.name'),
-            'version'      => '1.0.0',
-            'sandbox_mode' => Config::isSandbox(),
-        ]);
-    });
-
-    // Menu (WIP - for demonstration, not fully implemented)
-    $router->get('/menu',        [\App\Controllers\Api\MenuApiController::class, 'index']);
-    $router->get('/menu/{id}',   [\App\Controllers\Api\MenuApiController::class, 'show']);
-    $router->post('/menu',       [\App\Controllers\Api\MenuApiController::class, 'store']);
-    $router->put('/menu/{id}',   [\App\Controllers\Api\MenuApiController::class, 'update']);
-    $router->delete('/menu/{id}',[\App\Controllers\Api\MenuApiController::class, 'destroy']);
-
-    // Reservations
-    $router->get('/reservations',      [\App\Controllers\Api\ReservationApiController::class, 'index']);
-    $router->post('/reservations',     [\App\Controllers\Api\ReservationApiController::class, 'store']);
-    $router->patch('/reservations/{id}',[\App\Controllers\Api\ReservationApiController::class, 'updateStatus']);
-
-    // Orders
-    $router->get('/orders',            [\App\Controllers\Api\OrderApiController::class, 'index']);
-    $router->get('/orders/{id}',       [\App\Controllers\Api\OrderApiController::class, 'show']);
-    $router->post('/orders',           [\App\Controllers\Api\OrderApiController::class, 'store']);
-    $router->patch('/orders/{id}',     [\App\Controllers\Api\OrderApiController::class, 'updateStatus']);
-
-});
-
-// Dev-only routes (not reachable in production)
+// Load route definitions from external files for better organization
+$router->loadRoutesFrom(Config::get('paths.routes') . '/web.php');
+$router->loadRoutesFrom(Config::get('paths.routes') . '/api.php');
 if (Config::isDev()) {
+    $router->loadRoutesFrom(Config::get('paths.routes') . '/dev.php');
     $router->get('/test-email', function (Request $req, Response $res) {
         $handler = new \App\Handlers\NotificationHandler();
         $result  = $handler->sendReservationConfirmation(

@@ -31,6 +31,7 @@ class Config {
                 'storage'   => $base . '/storage',
                 'logs'      => $base . '/storage/logs',
                 'cache'     => $base . '/storage/cache',
+                'routes'    => $base . '/routes',
             ],
             'db' => [
                 'host' => $_ENV['DB_HOST'] ?? 'db',
