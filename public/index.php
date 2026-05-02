@@ -51,16 +51,7 @@ $router->loadRoutesFrom(Config::get('paths.routes') . '/web.php');
 $router->loadRoutesFrom(Config::get('paths.routes') . '/api.php');
 if (Config::isDev()) {
     $router->loadRoutesFrom(Config::get('paths.routes') . '/dev.php');
-    $router->get('/test-email', function (Request $req, Response $res) {
-        $handler = new \App\Handlers\NotificationHandler();
-        $result  = $handler->sendReservationConfirmation(
-            'test@example.com',
-            'John Doe',
-            ['date' => '2025-10-15', 'time' => '19:00', 'guests' => 4]
-        );
-        $res->json(['sent' => $result], $result ? 200 : 500);
-    });
-}
+};
 
 // Dispatch the request through the router to get a response
 $router->dispatch($request, $response);

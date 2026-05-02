@@ -9,6 +9,9 @@
  */
 
 use App\Controllers\Api\MenuApiController;
+use App\Middleware\CorsMiddleware;
+use App\Middleware\JsonMiddleware;
+use App\Middleware\AuthMiddleware;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Config;
@@ -17,7 +20,7 @@ use App\Core\Router;
 $router->group('/api/v1', function (Router $router) {
 
     // Health check — no auth required
-    $router->get('/status', function (Request $req, Response $res) {
+    $router->get('/status', function (Request $_req, Response $res) {
         $res->success([
             'app'          => Config::get('app.name'),
             'version'      => '1.0.0',
@@ -33,4 +36,10 @@ $router->group('/api/v1', function (Router $router) {
     $router->put('/menu/{id}',     [MenuApiController::class, 'update']);
     $router->delete('/menu/{id}',  [MenuApiController::class, 'destroy']);
 
-});
+    // Reservations
+    // $router->get('/reservations', [...]);
+
+    // Orders
+    // $router->get('/orders', [...]);
+
+}, [CorsMiddleware::class]);

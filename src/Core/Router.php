@@ -23,32 +23,33 @@ class Router
      /** @var array<int, array{method: string, pattern: string, handler: array|callable}> */
     private array  $routes   = [];
     private string $groupPrefix = '';
+    private array  $groupMiddlewares = [];
 
 
     //Route Registration
-    public function get(string $uri, array|callable $handler): void
+    public function get(string $uri, array|callable $handler, array $middlewares = []): void
     {
-        $this->addRoute('GET', $uri, $handler);
+        $this->addRoute('GET', $uri, $handler, $middlewares);
     }
 
-    public function post(string $uri, array|callable $handler): void
+    public function post(string $uri, array|callable $handler, array $middlewares = []): void
     {
-        $this->addRoute('POST', $uri, $handler);
+        $this->addRoute('POST', $uri, $handler, $middlewares);
     }
 
-    public function put(string $uri, array|callable $handler): void
+    public function put(string $uri, array|callable $handler, array $middlewares = []): void
     {
-        $this->addRoute('PUT', $uri, $handler);
+        $this->addRoute('PUT', $uri, $handler, $middlewares);
     }
 
-    public function patch(string $uri, array|callable $handler): void
+    public function patch(string $uri, array|callable $handler, array $middlewares = []): void
     {
-        $this->addRoute('PATCH', $uri, $handler);
+        $this->addRoute('PATCH', $uri, $handler, $middlewares);
     }
 
-    public function delete(string $uri, array|callable $handler): void
+    public function delete(string $uri, array|callable $handler, array $middlewares = []): void
     {
-        $this->addRoute('DELETE', $uri, $handler);
+        $this->addRoute('DELETE', $uri, $handler, $middlewares);
     }
 
     /** Grouping routes under a shared prefix, e.g. /api, /admin, etc. 
@@ -58,35 +59,55 @@ class Router
      * 
      * // Registers: GET /api/v1/menu
     */
-    public function group(string $prefix, callable $callback): void
+    public function group(string $prefix, callable $callback, array $middlewares = []): void
     {
-        $previous          = $this->groupPrefix;
-        $this->groupPrefix = $previous . $prefix;
+        $previousPrefix      = $this->groupPrefix;
+        $previousMiddlewares = $this->groupMiddlewares;
+
+        $this->groupPrefix      = $previousPrefix . $prefix;
+        $this->groupMiddlewares = array_merge($previousMiddlewares, $middlewares);
+
         $callback($this);
-        $this->groupPrefix = $previous; // restore after group
+
+        $this->groupPrefix      = $previousPrefix;
+        $this->groupMiddlewares = $previousMiddlewares;
     }
 
     //Dispatching
+
+    private function runPipeline(array $middlewares, Request $request, Response $response, callable $core): void
+    {
+        $pipeline = array_reduce(
+            array_reverse($middlewares),
+            fn(callable $next, string $mw) => fn() => (new $mw())->handle($request, $response, $next),
+            $core
+        );
+
+        $pipeline();
+    }
+
     public function dispatch(Request $request, Response $response): void
     {
         $method = $request->getMethod();
         $uri    = rtrim($request->getUri(), '/') ?: '/'; // Normalize URI, treat empty as "/"
 
+        
         foreach ($this->routes as $route) {
             if ($route['method'] !== $method) {
                 continue;
-            }
-
-            $params = $this->match($route['pattern'], $uri);
-
-            if ($params === null) {
-                continue;
-            }
-
-            // Inject matched route params into Request
-            $request->setParams($params);
-
+                }
+                
+                $params = $this->match($route['pattern'], $uri);
+                
+                if ($params === null) {
+                    continue;
+                    }
+                    
+                    // Inject matched route params into Request
+                    $request->setParams($params);
+                    
             $this->invoke($route['handler'], $request, $response);
+            $this->runPipeline($route['middlewares'], $request, $response, fn() => $this->invoke($route['handler'], $request, $response));
             return;
         }
 
@@ -94,15 +115,26 @@ class Router
         $response->notFound("Route not found for {$method} {$uri}");
     }
 
+
+
     //Internal Helpers
-    private function addRoute(string $method, string $uri, array|callable $handler): void
+
+    /** Internal method to register a route. Called by get(), post(), etc.
+     *  Supports both raw callables and [ControllerClass::class, 'method'] handlers.
+     *  Example:
+     *      $router->get('/menu', [MenuController::class, 'index']);
+     *      or
+     *      $router->get('/menu', function(Request $req, Response $res) { ... });
+     */
+    private function addRoute(string $method, string $uri, array|callable $handler, array $middlewares = []): void
     {
         $pattern = $this->groupPrefix . $uri;
 
         $this->routes[] = [
-            'method'  => $method,
-            'pattern' => $pattern,
-            'handler' => $handler
+            'method'      => $method,
+            'pattern'     => $pattern,
+            'handler'     => $handler,
+            'middlewares' => array_merge($this->groupMiddlewares, $middlewares),
         ];
     }
 

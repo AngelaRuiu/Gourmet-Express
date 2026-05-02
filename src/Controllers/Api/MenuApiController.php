@@ -6,6 +6,7 @@ use App\Controllers\BaseApiController;
 use App\Core\Request;
 use App\Core\Response;
 use App\Managers\MenuManager;
+use App\Constants\AppConstants;
 
 class MenuApiController extends BaseApiController
 {
@@ -16,11 +17,10 @@ class MenuApiController extends BaseApiController
         $this->menu = new MenuManager();
     }
 
-    /** GET /api/v1/menu */
     public function index(Request $request, Response $response): never
     {
         $items = $this->menu->findAll('category_id ASC');
-        $response->success($items);
+        $response->success($items, 'Menu loaded successfully.');
     }
 
     // GET /api/v1/menu/{id} - for admin use only (not implemented yet)
@@ -40,20 +40,26 @@ class MenuApiController extends BaseApiController
     public function store(Request $request, Response $response): never
     {
         $data = $this->validate($request, $response, ['name', 'price', 'category_id']);
-        $id   = $this->menu->create($this->only($request, ['name', 'description', 'price', 'category_id']));
-        $response->created(['id' => $id], 'Menu item created.');
+        $safe = $this->only($request, ['name', 'description', 'price', 'category_id', 'is_available']);
+        $id   = $this->menu->create($safe);
+
+        $response->created(
+            ['id' => $id, ...$safe],
+            'Menu item created.'
+        );
     }
 
     // PUT /api/v1/menu/{id} - for admin use only (not implemented yet)
     public function update(Request $request, Response $response): never
     {
         $id   = (int) $request->param('id');
-        $data = $this->only($request, ['name', 'description', 'price', 'category_id']);
-        $this->menu->updateById($id, $data);
+        $safe = $this->only($request, ['name', 'description', 'price', 'category_id', 'is_available']);
+
+        $this->menu->updateById($id, $safe);
         $response->success(null, 'Menu item updated.');
     }
 
-    // DELETE /api/v1/menu/{id} - for admin use only(not implemented yet)
+    // DELETE /api/v1/menu/{id} - for admin use only (not implemented yet)
     public function destroy(Request $request, Response $response): never
     {
         $id = (int) $request->param('id');
