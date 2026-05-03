@@ -26,7 +26,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
-            <a href="<?= $app_url ?>/reservations/manage" 
+            <a href="<?= $website_url ?>/reservations/manage" 
                style="background-color: #0f172a; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                Manage Reservation
             </a>

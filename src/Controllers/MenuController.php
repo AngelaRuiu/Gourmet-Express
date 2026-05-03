@@ -9,7 +9,7 @@ use App\Managers\MenuManager;
 class MenuController extends BaseController
 {
     // GET /menu - public page showing all menu items
-    public function index(Request $request, Response $response): never
+    public function index(Request $_req, Response $response): never
     {
         $menu     = new MenuManager();
         $dishes   = $menu->findAll('category_id ASC');

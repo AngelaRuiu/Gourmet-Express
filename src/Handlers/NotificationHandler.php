@@ -20,7 +20,7 @@ class NotificationHandler {
         $htmlBody = TemplateEngine::render('emails/reservation-confirmed.php', [
             'name'    => $name,
             'details' => $details,
-            'app_url' => Config::get('app.url')
+            'website_url' => Config::get('app.website_url')
         ]);
 
         return $this->emailService->send($email, $subject, $htmlBody);

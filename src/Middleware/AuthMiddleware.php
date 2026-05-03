@@ -2,9 +2,12 @@
 
 namespace App\Middleware;
 
-use App\Core\MiddlewareInterface;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\HostGuard;
+use App\Core\SessionManager;
+use App\Constants\AppConstants;
+use App\Core\MiddlewareInterface;
 
 /**
  * Middleware to enforce authentication.
@@ -13,18 +16,19 @@ use App\Core\Response;
  */
 class AuthMiddleware implements MiddlewareInterface
 {
-    public function handle(Request $request, Response $response, callable $next): void
+    public function handle(Request $_req, Response $response, callable $next): void
     {
-        session_start();
-
-        if (empty($_SESSION['user_id'])) {
-            // API request → JSON 401
-            if ($request->expectsJson()) {
-                $response->unauthorized('You must be logged in.');
+         if (!SessionManager::isLoggedIn()) {
+            if ($_req->expectsJson()) {
+                $response->unauthorized('Authentication required.');
             }
 
-            // Web request → redirect to login page
-            $response->redirect('/login');
+            // Store intended URL so we can redirect back after login
+            SessionManager::flash('intended_url', $_req->getUri());
+            $loginUrl = HostGuard::isAdminHost()
+                ? 'http://' . AppConstants::ADMIN_HOST . '/login'
+                : '/login';
+            $response->redirect($loginUrl);
         }
 
         $next();

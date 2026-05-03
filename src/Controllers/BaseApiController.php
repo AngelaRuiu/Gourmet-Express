@@ -13,7 +13,7 @@ use App\Core\Response;
  * Usage:
  *   class MenuApiController extends BaseApiController
  *   {
- *       public function index(Request $request, Response $response): never
+ *       public function index(Request $_req, Response $response): never
  *       {
  *           $dishes = (new MenuManager())->findAll();
  *           $response->success($dishes);
@@ -29,10 +29,10 @@ abstract class BaseApiController
      * Calls $response->error() and exits on failure — controller never continues.
      *
      * Usage:
-     *   $data = $this->validate($request, $response, ['name', 'price', 'category_id']);
+     *   $data = $this->validate($_req, $response, ['name', 'price', 'category_id']);
      */
-    protected function validate( Request  $request, Response $response,array $required): array {
-        $data   = $request->all();
+    protected function validate( Request  $_req, Response $response,array $required): array {
+        $data   = $_req->all();
         $errors = [];
 
         foreach ($required as $field) {
@@ -49,9 +49,9 @@ abstract class BaseApiController
     }
 
     // Helper method: return only specific keys from the request, already validated.
-    protected function only(Request $request, array $keys): array
+    protected function only(Request $_req, array $keys): array
     {
-        return $request->only($keys);
+        return $_req->only($keys);
     }
 
     // Helper method: abort the request with an error response if a condition is not met (e.g. authorization check).

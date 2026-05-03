@@ -44,8 +44,7 @@ VALUES
      '22:30:00',
      15);
 
-/* USERS  (staff only — passwords are bcrypt of "Secret1234!")
-Generated with https://bcrypt-generator.com/ for security best practices, even in seed data.
+/* USERS 
 */
 
 INSERT INTO `users`
@@ -55,7 +54,7 @@ VALUES
      'Alexandra',
      'Weber',
      'admin@gourmet-express.local',
-     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',   -- Secret1234!
+     '$2y$12$vkqRJZzwaVNYZYKph5lL1.Y.UM/tdA3Y8Bj/7JmVtEfo2tMkPriRG',   -- Secret1234!
      '+49 721 100001',
      'admin',
      '2022-01-10'),
@@ -64,38 +63,10 @@ VALUES
      'Sophie',
      'Müller',
      'sophie.mueller@gourmet-express.local',
-     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+     '$2y$12$vkqRJZzwaVNYZYKph5lL1.Y.UM/tdA3Y8Bj/7JmVtEfo2tMkPriRG',   -- Secret1234!
      '+49 721 100002',
      'manager',
      '2022-03-15'),
-
-    ('chef_markus',
-     'Markus',
-     'Bäcker',
-     'markus.baecker@gourmet-express.local',
-     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-     '+49 721 100003',
-     'staff',
-     '2022-06-01'),
-
-    ('waiter_lisa',
-     'Lisa',
-     'Schneider',
-     'lisa.schneider@gourmet-express.local',
-     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-     '+49 721 100004',
-     'staff',
-     '2023-02-20'),
-
-    ('waiter_tom',
-     'Tom',
-     'Fischer',
-     'tom.fischer@gourmet-express.local',
-     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-     '+49 721 100005',
-     'staff',
-     '2023-07-01');
-
 -- CATEGORIES
 
 INSERT INTO `categories` (`name`, `slug`, `description`, `image_path`, `sort_order`, `is_active`) VALUES

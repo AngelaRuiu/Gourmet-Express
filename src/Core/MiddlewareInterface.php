@@ -9,5 +9,5 @@ interface MiddlewareInterface
      * Call $next() to pass to the next middleware or controller.
      * Call $response->error() / forbidden() / unauthorized() to abort.
      */
-    public function handle(Request $request, Response $response, callable $next): void;
+    public function handle(Request $_req, Response $response, callable $next): void;
 }

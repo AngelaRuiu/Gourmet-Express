@@ -55,13 +55,13 @@ class Request
     * Get a route parameter by name, with an optional default if not set.
     *
     * Usage:
-    *   $email = $request->param('email', '');
-    *   $id = $request->param('id', 0);
-    *   $name = $request->param('name', 'Guest');
-    *   $date = $request->param('date', date('Y-m-d'));
-    *   $isAdmin = $request->param('is_admin', false);
-    *   $tags = $request->param('tags', []);
-    *   $preferences = $request->param('preferences', ['newsletter' => true]);
+    *   $email = $_req->param('email', '');
+    *   $id = $_req->param('id', 0);
+    *   $name = $_req->param('name', 'Guest');
+    *   $date = $_req->param('date', date('Y-m-d'));
+    *   $isAdmin = $_req->param('is_admin', false);
+    *   $tags = $_req->param('tags', []);
+    *   $preferences = $_req->param('preferences', ['newsletter' => true]);
     */
     public function param (string $key, mixed $default = null): mixed
     {
@@ -95,7 +95,7 @@ class Request
      * Returns only the listed keys from the request body.
      * TO be used in controllers to avoid boilerplate of fetching and validating individual fields.
      * Example:
-     *   $data = $request->only(['email', 'password']);
+     *   $data = $_req->only(['email', 'password']);
      *   $email = $data['email'] ?? '';
      *   $password = $data['password'] ?? '';
      */

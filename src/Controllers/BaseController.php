@@ -34,11 +34,11 @@ abstract class BaseController
     /**
      * Pull a value from the request body with an optional default.
      * Usage:
-     *  $email = $this->input($request, 'email', '');
+     *  $email = $this->input($_req, 'email', '');
      */
-    protected function input(Request $request, string $key, mixed $default = null): mixed
+    protected function input(Request $_req, string $key, mixed $default = null): mixed
     {
-        return $request->input($key, $default);
+        return $_req->input($key, $default);
     }
 
 }

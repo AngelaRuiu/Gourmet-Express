@@ -75,21 +75,29 @@ class Router
 
     //Dispatching
 
-    private function runPipeline(array $middlewares, Request $request, Response $response, callable $core): void
+    private function runPipeline(array $middlewares, Request $_req, Response $response, callable $core): void
     {
         $pipeline = array_reduce(
-            array_reverse($middlewares),
-            fn(callable $next, string $mw) => fn() => (new $mw())->handle($request, $response, $next),
-            $core
-        );
+        array_reverse($middlewares),
+        function (callable $next, string|object $mw) use ($_req, $response) {
+            return function () use ($mw, $_req, $response, $next) {
 
-        $pipeline();
+                // Accept either a class string or an already-instantiated object
+                $instance = is_string($mw) ? new $mw() : $mw;
+                $instance->handle($_req, $response, $next);
+            };
+        },
+        $core
+    );
+
+    $pipeline();
+
     }
 
-    public function dispatch(Request $request, Response $response): void
+    public function dispatch(Request $_req, Response $response): void
     {
-        $method = $request->getMethod();
-        $uri    = rtrim($request->getUri(), '/') ?: '/'; // Normalize URI, treat empty as "/"
+        $method = $_req->getMethod();
+        $uri    = rtrim($_req->getUri(), '/') ?: '/'; // Normalize URI, treat empty as "/"
 
         
         foreach ($this->routes as $route) {
@@ -104,10 +112,10 @@ class Router
                     }
                     
                     // Inject matched route params into Request
-                    $request->setParams($params);
+                    $_req->setParams($params);
                     
-            $this->invoke($route['handler'], $request, $response);
-            $this->runPipeline($route['middlewares'], $request, $response, fn() => $this->invoke($route['handler'], $request, $response));
+            $this->invoke($route['handler'], $_req, $response);
+            $this->runPipeline($route['middlewares'], $_req, $response, fn() => $this->invoke($route['handler'], $_req, $response));
             return;
         }
 
@@ -170,10 +178,10 @@ class Router
     /**
      * Invoke either a [ControllerClass, 'method'] pair or a raw callable.
      */
-    private function invoke(array|callable $handler, Request $request, Response $response): void
+    private function invoke(array|callable $handler, Request $_req, Response $response): void
     {
         if (is_callable($handler)) {
-            $handler($request, $response);
+            $handler($_req, $response);
             return;
         }
 
@@ -190,7 +198,7 @@ class Router
             throw new \RuntimeException("Method {$method} not found on {$class}");
         }
 
-        $controller->{$method}($request, $response);
+        $controller->{$method}($_req, $response);
     }
 
 /**

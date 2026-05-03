@@ -339,7 +339,7 @@ abstract class DbEntityBase
      * passed via query string) to prevent column-injection attacks.
      *
      * Example:
-     *   $safe = DbEntityBase::filterColumns($requestData, ['name', 'email', 'phone']);
+     *   $safe = DbEntityBase::filterColumns($_reqData, ['name', 'email', 'phone']);
      *
      * @param array<string, mixed> $data            Raw input data.
      * @param string[]             $allowedColumns  Columns that may pass through.

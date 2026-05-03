@@ -13,10 +13,10 @@ use App\Core\Response;
  */
 class JsonMiddleware implements MiddlewareInterface
 {
-    public function handle(Request $request, Response $response, callable $next): void
+    public function handle(Request $_req, Response $response, callable $next): void
     {
-        if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH'])) {
-            if (!$request->isJson()) {
+        if (in_array($_req->getMethod(), ['POST', 'PUT', 'PATCH'])) {
+            if (!$_req->isJson()) {
                 $response->error(
                     'Content-Type must be application/json',
                     415  // 415 Unsupported Media Type

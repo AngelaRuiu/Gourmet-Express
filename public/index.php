@@ -8,6 +8,8 @@ use App\Core\Config;
 use App\Core\Router;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\HostGuard;
+use App\Core\SessionManager;
 use App\Constants\AppConstants;
 
 // Initialize Environment Variables
@@ -29,6 +31,9 @@ Config::initialize();
 // Set default timezone globally
 date_default_timezone_set(AppConstants::DEFAULT_TIMEZONE);
 
+HostGuard::initialize();
+SessionManager::start(); 
+
 /**
  * Debugging & Error Reporting
  */
@@ -42,16 +47,21 @@ if (Config::get('app.debug')) {
 }
 
 // HTTP Request Handling
-$request  = new Request();
+$_req  = new Request();
 $response = new Response();
 $router   = new Router();
 
-// Load route definitions from external files for better organization
-$router->loadRoutesFrom(Config::get('paths.routes') . '/web.php');
-$router->loadRoutesFrom(Config::get('paths.routes') . '/api.php');
+// Load routes based on which host the request came from
+if (HostGuard::isAdminHost()) {
+    $router->loadRoutesFrom(Config::get('paths.routes') . '/admin.php');
+} else {
+    $router->loadRoutesFrom(Config::get('paths.routes') . '/web.php');
+    $router->loadRoutesFrom(Config::get('paths.routes') . '/api.php');
+}
+
 if (Config::isDev()) {
     $router->loadRoutesFrom(Config::get('paths.routes') . '/dev.php');
-};
+}
 
 // Dispatch the request through the router to get a response
-$router->dispatch($request, $response);
+$router->dispatch($_req, $response);
